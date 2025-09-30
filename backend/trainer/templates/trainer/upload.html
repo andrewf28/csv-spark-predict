@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CSV Trainer</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 2rem;
+        background: #f5f7fb;
+      }
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+      }
+      h1 {
+        margin-top: 0;
+        color: #1f2937;
+      }
+      form {
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+      input[type="file"] {
+        flex: 1;
+      }
+      button {
+        background: #2563eb;
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      button:hover {
+        background: #1d4ed8;
+      }
+      .errorlist {
+        color: #b91c1c;
+        list-style: none;
+        padding: 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2rem;
+      }
+      th,
+      td {
+        border: 1px solid #e5e7eb;
+        padding: 0.75rem;
+        text-align: left;
+      }
+      th {
+        background: #f9fafb;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+      .metric-card {
+        background: #eff6ff;
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+      }
+      .metric-card h3 {
+        margin: 0 0 0.5rem;
+        font-size: 1rem;
+        color: #1d4ed8;
+      }
+      .metric-card p {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #1f2937;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Train Surgical Duration Model</h1>
+      <p>Upload a CSV file that matches the template to train a new model.</p>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.csv_file }}
+        <button type="submit">Train model</button>
+      </form>
+      {% if form.errors %}
+      <ul class="errorlist">
+        {% for field_errors in form.errors.values %}
+        {% for error in field_errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      {% if metrics %}
+      <section>
+        <h2>Performance metrics</h2>
+        <div class="metrics">
+          {% for label, value in metrics.items %}
+          <div class="metric-card">
+            <h3>{{ label }}</h3>
+            <p>{{ value }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      {% if feature_importances %}
+      <section>
+        <h2>Feature importances</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Importance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in feature_importances %}
+            <tr>
+              <td>{{ row.Feature }}</td>
+              <td>{{ row.Importance|floatformat:4 }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+      {% endif %}
+
+      {% if dataset_preview %}
+      <section>
+        <h2>Sample of uploaded data</h2>
+        <table>
+          <thead>
+            <tr>
+              {% for column in dataset_columns %}
+              <th>{{ column }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in dataset_preview %}
+            <tr>
+              {% for value in row %}
+              <td>{{ value }}</td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+      {% endif %}
+    </div>
+  </body>
+</html>
