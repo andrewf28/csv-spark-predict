@@ -59,6 +59,22 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Django (CSV training backend)
+
+### Running the Django backend
+
+The backend that processes CSV uploads lives in the `backend/` directory. To run it locally:
+
+```sh
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cd backend
+python manage.py migrate
+python manage.py runserver
+```
+
+Visit `http://127.0.0.1:8000/` to upload a CSV that matches the sample in `misc/` and view the resulting training metrics.
 
 ## How can I deploy this project?
 
